@@ -1,29 +1,39 @@
-# Define the C compiler
-CC = gcc
 
-# Define the C flags
-CFLAGS = -Wall -Wextra -I./include
+LD = qcc
+TARGET = -Vgcc_ntox86_64
 
-# Define the source files
-SRC = ./src/array.c ./test/test_array.c
+CFLAGS = -Wall -Wextra $(TARGET) -I./include
 
-# Define the object files
-OBJ = $(SRC:.c=.o)
+# src files
+LOCK_FREE_SRC = ./src/array.c
+LOCK_FREE_OBJ = $(LOCK_FREE_SRC:.c=.o)
 
-# Define the executable file
-EXEC = test_array
+LOCK_BASED_SRC = ./test/array/lock_based_array.c
+LOCK_BASED_OBJ = $(LOCK_BASED_SRC:.c=.o)
 
-# Default target
-all: $(EXEC)
+# test files
+TEST_LF_REAL_SRC = ./test/array/test_lock_free_array_real.c
+TEST_LB_REAL_SRC = ./test/array/test_lock_based_array_real.c
 
-# Link the object files to create the executable
-$(EXEC): $(OBJ)
+# executables
+LOCK_FREE_EXEC = test_lock_free_array_real
+LOCK_BASED_EXEC = test_lock_based_array_real
+
+# build rules
+all: $(LOCK_FREE_EXEC) $(LOCK_BASED_EXEC)
+
+# 
+$(LOCK_FREE_EXEC): $(LOCK_FREE_SRC:.c=.o) $(TEST_LF_REAL_SRC:.c=.o)
 	$(CC) $(CFLAGS) $^ -o $@
 
-# Compile the source files to create object files
+$(LOCK_BASED_EXEC): $(LOCK_BASED_SRC:.c=.o) $(TEST_LB_REAL_SRC:.c=.o)
+	$(CC) $(CFLAGS) $^ -o $@
+
+# 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean target
+# clean
 clean:
-	rm -f $(OBJ) $(EXEC)
+	find . -name "*.o" -type f -delete
+	rm -f $(LOCK_FREE_EXEC) $(LOCK_BASED_EXEC)
