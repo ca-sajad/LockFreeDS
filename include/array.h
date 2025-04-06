@@ -16,15 +16,13 @@ typedef struct
 typedef struct 
 {
     _Atomic size_t size;
-    _Atomic size_t capacity;
     _Atomic(WriteDescriptor*) pendingWrite;
-    _Atomic int refCount;  // Reference counter for safe memory reclamation
+    _Atomic int refCount;
 } Descriptor;
 
 typedef struct 
 {
     _Atomic size_t size;
-    _Atomic size_t capacity;
     _Atomic(void*)* memory;
     _Atomic(void*) descriptor;
 } LockFreeArray;
@@ -46,7 +44,5 @@ int arrayWrite(LockFreeArray* array, size_t index, void* element);
 int arrayReserve(LockFreeArray* array, size_t size);
 // Get the size of the array
 size_t arraySize(LockFreeArray* array);
-
-
 
 #endif // LOCK_FREE_ARRAY_H
